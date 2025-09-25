@@ -3,17 +3,27 @@
 const Article = require("../models/article.js");
 const { canUpdateArticle, canDeleteArticle } = require("../middlewares/permissions.middleware.js");
 const storageProvider = require("../services/storage/storage.js");
+const mongoose = require('mongoose');
 
 //Un utilisateur peut créer un article
 async function createArticle(req, res, next) {
   try {
     const imageUrl = req.file ? storageProvider.getFileUrl(req.file) : null;
 
+    let tags = [];
+    if (req.body.tags) {
+      if (Array.isArray(req.body.tags)) {
+        tags = req.body.tags;
+      } else if (typeof req.body.tags === 'string') {
+        tags = req.body.tags.split(',').map(tag => tag.trim()).filter(tag => tag);
+      }
+    }
+
     const article = await Article.create({
       title: req.body.title,
       content: req.body.content,
       image: imageUrl,
-      tags: req.body.tags ? req.body.tags.split(',') : [],
+      tags: tags,
       authorId: req.user.id,
     });
 
@@ -43,11 +53,31 @@ async function getArticles(req, res, next) {
 
 async function getArticle(req, res, next) {
   try {
-    const article = await Article.findById(req.params.id);
-    if (!article) return res.status(404).json({ error: "Not found" });
+    const id = req.params.id;
+
+    if (!id || !mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(404).json({
+        error: "Invalid article ID format",
+        message: "not found/Wrong id format"
+      });
+    }
+
+    const article = await Article.findById(id);
+
+    if (!article) {
+      return res.status(404).json({
+        error: "Article not found",
+        message: `No article found with ID: ${id}`
+      });
+    }
+
     res.json(article);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error('Error fetching article:', err);
+    res.status(500).json({
+      error: "Internal server error",
+      message: err.message
+    });
   }
 }
 
@@ -88,9 +118,9 @@ async function deleteArticle(req, res, next) {
 }
 
 module.exports = {
-    deleteArticle,
-    updateArticle,
-    getArticle,
-    getArticles,
-    createArticle
+  deleteArticle,
+  updateArticle,
+  getArticle,
+  getArticles,
+  createArticle
 };
