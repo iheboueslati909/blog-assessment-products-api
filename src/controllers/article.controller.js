@@ -4,6 +4,7 @@ const Article = require("../models/article.js");
 const { canUpdateArticle, canDeleteArticle } = require("../middlewares/permissions.middleware.js");
 const storageProvider = require("../services/storage/storage.js");
 const mongoose = require('mongoose');
+const eventBus = require('../eventBus');
 
 //Un utilisateur peut créer un article
 async function createArticle(req, res, next) {
