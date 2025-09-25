@@ -1,6 +1,9 @@
 'use strict';
-
 const express = require('express');
+const router = express.Router();
+const authMiddleware = require('../middlewares/auth.middleware.js');
+const storageProvider = require('../services/storage/storage.js'); // local or s3
+
 const {
   createArticle,
   getArticles,
@@ -8,18 +11,29 @@ const {
   updateArticle,
   deleteArticle,
 } = require('../controllers/article.controller.js');
-const authMiddleware = require('../middlewares/auth.middleware.js');
-const storageProvider = require('../services/storage/storage.js');
-const { createComment, getComments } = require('../controllers/comment.controller.js');
 
-const router = express.Router();
+const { createComment, getComments } = require('../controllers/comment.controller');
 
-router.get("/", authMiddleware.authenticate,getArticles);
-router.get("/:id", getArticle);
+// Articles
+router.get('/', authMiddleware.authenticate, getArticles);
+router.get('/:id', getArticle);
 
-router.post("/", authMiddleware.authenticate, createArticle);
-router.put("/:id", authMiddleware.authenticate, updateArticle);
-router.delete("/:id", authMiddleware.authenticate, deleteArticle);
+router.post(
+  '/',
+  authMiddleware.authenticate,
+  storageProvider.upload.single('image'),
+  createArticle
+);
+
+router.put(
+  '/:id',
+  authMiddleware.authenticate,
+  storageProvider.upload.single('image'),
+  updateArticle
+);
+
+router.delete('/:id', authMiddleware.authenticate, deleteArticle);
+
 router.post('/:articleId/comments', authMiddleware.authenticate, createComment);
 router.get('/:articleId/comments', getComments);
 

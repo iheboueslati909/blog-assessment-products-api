@@ -5,10 +5,9 @@ const express = require('express');
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
 const rateLimit = require('express-rate-limit');
-
+const path = require('path');
 const config = require('./config');
 const articleRoutes = require('./routes/article.routes');
-const uploadRoutes = require('./routes/upload.routes');
 
 const app = express();
 
@@ -50,8 +49,7 @@ app.use(globalLimiter);
 app.get('/healthz', (req, res) => res.status(200).json({ status: 'ok' }));
 
 app.use('/api/articles', articleRoutes);
-app.use('/api/file-upload', uploadRoutes);
-
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 app.use((req, res, next) => {
   res.status(404).json({ message: 'Not Found' });

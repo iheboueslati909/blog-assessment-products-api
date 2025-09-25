@@ -25,8 +25,13 @@ const config = {
   CORS_ORIGINS: getEnv('CORS_ORIGINS', 'http://localhost:4200'),
 
   // Rate limiting
-  RATE_LIMIT_WINDOW_MS: Number(getEnv('RATE_LIMIT_WINDOW_MS', 15 * 60 * 1000)), // 15m
+  RATE_LIMIT_WINDOW_MS: Number(getEnv('RATE_LIMIT_WINDOW_MS', 15 * 60 * 1000)),
   RATE_LIMIT_MAX: Number(getEnv('RATE_LIMIT_MAX', 100)),
+
+  // Storage
+  STORAGE_PROVIDER: getEnv('STORAGE_PROVIDER', 'local'), // local | cloud
+  FILE_BASE_URL: getEnv('FILE_BASE_URL', `http://localhost:${getEnv('PORT', 3001)}`),
+  UPLOAD_DIR: getEnv('UPLOAD_DIR', 'uploads'),
 };
 
 // Fail fast for essential secrets in non-dev environments

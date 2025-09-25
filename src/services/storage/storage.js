@@ -1,6 +1,6 @@
 'use strict';
 const localProvider = require('./localProvider');
-const s3Provider = require('./s3Provider');
+// const s3Provider = require('./s3Provider');
 
 const STORAGE_DRIVER = process.env.STORAGE_DRIVER || 'local';
 

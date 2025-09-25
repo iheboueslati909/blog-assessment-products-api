@@ -65,7 +65,6 @@ async function createComment(req, res, next) {
         createdAt: comment.createdAt,
       });
     } catch (evErr) {
-      // Log and continue — publishing failure should not block comment creation
       console.error('Failed to publish comment.created event', evErr);
     }
 

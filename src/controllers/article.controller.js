@@ -9,9 +9,10 @@ const eventBus = require('../eventBus');
 //Un utilisateur peut créer un article
 async function createArticle(req, res, next) {
   try {
-    const imageUrl = req.file ? storageProvider.getFileUrl(req.file) : null;
-
+    const imageUrl = req.file ? storageProvider.getFilePath(req.file) : null;
+    
     let tags = [];
+    
     if (req.body.tags) {
       if (Array.isArray(req.body.tags)) {
         tags = req.body.tags;
