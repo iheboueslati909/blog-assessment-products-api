@@ -94,6 +94,10 @@ async function updateArticle(req, res, next) {
       return res.status(403).json({ error: "Forbidden" });
     }
 
+    if (req.file) {
+      article.image = storageProvider.getFilePath(req.file);
+    }
+
     Object.assign(article, req.body);
     await article.save();
     res.json(article);
@@ -101,6 +105,7 @@ async function updateArticle(req, res, next) {
     res.status(400).json({ error: err.message });
   }
 }
+
 
 //Seul un Admin peut supprimer des articles.
 async function deleteArticle(req, res, next) {
